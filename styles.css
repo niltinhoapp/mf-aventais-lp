@@ -5,12 +5,13 @@
   --muted:#a7adbb;
   --line:rgba(255,255,255,.08);
 
-  /* vermelho mais premium */
   --accent:#E11D48;   /* ruby */
   --accent2:#FB7185;  /* rose */
 
   --shadow: 0 18px 45px rgba(0,0,0,.45);
   --radius:22px;
+
+  --ok:#25D366;
 }
 
 *{ box-sizing:border-box; }
@@ -24,11 +25,13 @@ body{
     var(--bg);
   color:var(--text);
 }
-
 a{ color:inherit; text-decoration:none; }
+img{ max-width:100%; height:auto; }
 .container{ width:min(1120px, 92%); margin:0 auto; }
 
-/* Topbar */
+/* =========================
+   TOPBAR
+========================= */
 .topbar{
   position:sticky;
   top:0;
@@ -56,7 +59,9 @@ a{ color:inherit; text-decoration:none; }
 .brand__text{ display:flex; flex-direction:column; line-height:1.1; }
 .brand__text span{ color:var(--muted); font-size:13px; margin-top:3px; }
 
-/* Buttons */
+/* =========================
+   BOTÕES
+========================= */
 .btn{
   display:inline-flex;
   align-items:center;
@@ -88,7 +93,22 @@ a{ color:inherit; text-decoration:none; }
 }
 .btn--ghost:hover{ background: rgba(255,255,255,.06); }
 
-/* Hero */
+/* opcional */
+.btn--pulse{
+  animation: pulseSoft 1.8s ease-in-out infinite;
+}
+@keyframes pulseSoft{
+  0%{ transform: scale(1); }
+  50%{ transform: scale(1.02); }
+  100%{ transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce){
+  .btn--pulse{ animation:none; }
+}
+
+/* =========================
+   HERO
+========================= */
 .hero{ padding: 56px 0 34px; }
 .hero__grid{
   display:grid;
@@ -96,7 +116,6 @@ a{ color:inherit; text-decoration:none; }
   gap:28px;
   align-items:center;
 }
-
 .badge{
   display:inline-flex;
   padding:8px 12px;
@@ -121,20 +140,6 @@ h1{
   line-height:1.55;
 }
 .hero__cta{ display:flex; gap:12px; flex-wrap:wrap; margin: 10px 0 14px; }
-
-.proof{
-  display:flex; gap:14px;
-  margin: 12px 0 14px;
-}
-.proof__item{
-  padding:12px 14px;
-  border:1px solid var(--line);
-  background: rgba(255,255,255,.03);
-  border-radius: 18px;
-  min-width: 150px;
-}
-.proof__item strong{ display:block; font-size:18px; }
-.proof__item span{ color:var(--muted); font-size:13px; }
 
 .checks{
   margin: 10px 0 0;
@@ -166,7 +171,9 @@ h1{
 }
 .mediaMini__text span{ color:var(--muted); font-size:13px; }
 
-/* Sections */
+/* =========================
+   SECTIONS
+========================= */
 .section{ padding: 54px 0; }
 .section--alt{
   background: rgba(255,255,255,.02);
@@ -177,7 +184,13 @@ h1{
 .section__head h2{ margin:0 0 8px; font-size: 28px; letter-spacing:-.02em; }
 .section__head p{ margin:0; color: var(--muted); line-height:1.6; }
 
-/* Cards */
+.center{ display:flex; justify-content:center; }
+.mt{ margin-top: 18px; }
+.muted{ color: var(--muted); margin:10px 0 0; font-size:13px; }
+
+/* =========================
+   CARDS
+========================= */
 .cards{
   display:grid;
   grid-template-columns: repeat(3, 1fr);
@@ -193,7 +206,9 @@ h1{
 .card h3{ margin:0 0 8px; font-size:16px; }
 .card p{ margin:0; color:var(--muted); line-height:1.55; }
 
-/* Benefits grid */
+/* =========================
+   GRID BENEFÍCIOS + HIGHLIGHT
+========================= */
 .grid2{
   display:grid;
   grid-template-columns: 1fr 1fr;
@@ -227,10 +242,148 @@ h1{
 .highlight__title{ margin:0 0 6px; font-weight:900; }
 .highlight__text{ margin:0 0 14px; color:var(--muted); line-height:1.6; }
 
-.center{ display:flex; justify-content:center; }
-.mt{ margin-top: 18px; }
+/* =========================
+   SPOTLIGHT (destaque prova real)
+========================= */
+.spotlight{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:14px;
+  align-items: stretch;
+  margin-top: 18px;
+}
+.spotlight__media{
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.03);
+  min-height: 360px;
+}
+.spotlight__img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  display:block;
+  transform: scale(1.01);
+}
+.spotlight__badge{
+  position:absolute;
+  left:12px;
+  top:12px;
+  padding:8px 10px;
+  border-radius:999px;
+  background: rgba(0,0,0,.38);
+  border: 1px solid rgba(255,255,255,.14);
+  color: rgba(255,255,255,.92);
+  font-size:13px;
+  font-weight:800;
+}
+.spotlight__content{
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(600px 220px at 10% 0%, rgba(225,29,72,.12), transparent 60%),
+    rgba(255,255,255,.03);
+  padding: 18px;
+}
+.spotlight__tag{
+  margin:0 0 10px;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.70);
+}
+.spotlight__title{ margin:0 0 10px; font-size: 20px; letter-spacing: -.02em; }
+.spotlight__handle{ color: var(--accent2); font-weight: 900; }
+.spotlight__text{ margin:0 0 14px; color: var(--muted); line-height: 1.6; }
+.spotlight__checks{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom: 14px;
+}
+.pill{
+  display:inline-flex;
+  padding:8px 10px;
+  border-radius:999px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--line);
+  color: rgba(255,255,255,.86);
+  font-size: 13px;
+  font-weight: 800;
+}
+.spotlight__quote{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+  margin-bottom: 14px;
+}
+.spotlight__quote p{ margin:0; color: rgba(255,255,255,.82); line-height: 1.55; }
+.spotlight__cta{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom: 10px; }
 
-/* Gallery */
+/* =========================
+   PASSOS
+========================= */
+.steps{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:14px;
+  margin-top: 16px;
+}
+.stepCard{
+  background: rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  padding:18px;
+  display:grid;
+  gap:8px;
+}
+.stepCard__badge{
+  width: fit-content;
+  font-size:12px;
+  font-weight:800;
+  color:#12070a;
+  padding:6px 10px;
+  border-radius:999px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+}
+.stepCard h3{ margin:0; font-size:16px; }
+.stepCard p{ margin:0; color:var(--muted); line-height:1.55; }
+
+/* =========================
+   FAQ
+========================= */
+.faq{
+  display:grid;
+  gap:12px;
+  margin-top: 16px;
+}
+.faq__item{
+  border-radius: var(--radius);
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.03);
+  padding:14px 16px;
+}
+.faq__item summary{
+  cursor:pointer;
+  font-weight:800;
+  list-style: none;
+}
+.faq__item summary::-webkit-details-marker{ display:none; }
+.faq__item p{
+  margin:10px 0 0;
+  color: var(--muted);
+  line-height:1.55;
+}
+
+/* =========================
+   GALERIA
+========================= */
 .gallery{
   display:grid;
   grid-template-columns: repeat(3, 1fr);
@@ -256,7 +409,9 @@ h1{
   font-size:13px;
 }
 
-/* CTA Final */
+/* =========================
+   CTA FINAL
+========================= */
 .ctaFinal{
   padding: 58px 0;
   background:
@@ -289,9 +444,10 @@ h1{
 }
 .ctaFinal__small{ margin:0; color:var(--muted); font-size:12px; }
 .ctaFinal__phone{ margin:6px 0 12px; font-size:18px; font-weight:900; }
-.muted{ color: var(--muted); margin:10px 0 0; font-size:13px; }
 
-/* Footer */
+/* =========================
+   FOOTER + SOCIAL
+========================= */
 .footer{
   padding: 18px 0;
   border-top: 1px solid var(--line);
@@ -312,7 +468,6 @@ h1{
 .footer__links a{ color:var(--muted); }
 .footer__links a:hover{ color: var(--text); }
 
-/* Social buttons */
 .social{
   display:flex;
   gap:10px;
@@ -337,7 +492,9 @@ h1{
 }
 .social__icon{ display:grid; place-items:center; color: rgba(255,255,255,.88); }
 
-/* WhatsApp floating button (sempre visível + pulsante) */
+/* =========================
+   WHATSAPP FLUTUANTE
+========================= */
 .waFloat{
   position: fixed;
   right: 16px;
@@ -348,12 +505,13 @@ h1{
   gap:10px;
   padding:13px 16px;
   border-radius: 999px;
-  background: #25D366;
+  background: var(--ok);
   color: #06210f;
   box-shadow: 0 16px 38px rgba(37, 211, 102, .22);
   border: 1px solid rgba(255,255,255,.18);
   transition: transform .2s ease, opacity .2s ease, filter .2s ease;
   animation: waPulse 1.6s ease-in-out infinite;
+  --lift: 0px;
 }
 .waFloat:hover{ filter: brightness(1.02); }
 .waFloat__text{ font-weight: 900; }
@@ -365,17 +523,17 @@ h1{
   100% { transform: translateY(0) scale(1); }
 }
 
-/* Quando o footer aparecer, sobe o botão (continua visível) */
 .waFloat.lift{
-  transform: translateY(-110px);
+  transform: translateY(calc(var(--lift) * -1));
 }
 
-/* Respeita preferências */
 @media (prefers-reduced-motion: reduce){
   .waFloat{ animation: none; }
 }
 
-/* HERO CAROUSEL */
+/* =========================
+   HERO CAROUSEL
+========================= */
 .heroCarousel{
   position: relative;
   border-radius: var(--radius);
@@ -383,9 +541,8 @@ h1{
   border: 1px solid var(--line);
   background: rgba(255,255,255,.03);
   box-shadow: var(--shadow);
-  min-height: 320px;
+  height: 360px;
 }
-
 .heroCarousel__slide{
   position: absolute;
   inset: 0;
@@ -394,13 +551,11 @@ h1{
   transition: opacity .45s ease, transform .6s ease;
   pointer-events: none;
 }
-
 .heroCarousel__slide.is-active{
   opacity: 1;
   transform: scale(1);
   pointer-events: auto;
 }
-
 .heroCarousel__img{
   width: 100%;
   height: 100%;
@@ -502,7 +657,9 @@ h1{
 }
 .dotBtn.is-active{ background: rgba(255,255,255,.92); }
 
-/* VIDEOS */
+/* =========================
+   VÍDEOS (THUMB COM CAPA)
+========================= */
 .videoGrid{
   display:grid;
   grid-template-columns: repeat(3, 1fr);
@@ -516,38 +673,60 @@ h1{
   overflow:hidden;
 }
 .videoCard__thumb{
-  width:100%;
-  height: 220px;
-  border:0;
-  cursor:pointer;
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  padding:12px;
-  color: var(--text);
-  background:
-    radial-gradient(360px 220px at 30% 30%, rgba(225,29,72,.16), transparent 55%),
-    linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
   position: relative;
+  width: 100%;
+  height: 220px;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  overflow: hidden;
+  background: #0f1116; /* fallback */
 }
-.videoCard__thumb:hover{ filter: brightness(1.02); }
+.videoCard__cover{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.02);
+  transition: transform .25s ease;
+}
+.videoCard__thumb:hover .videoCard__cover{
+  transform: scale(1.06);
+}
+.videoCard__overlay{
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.10) 0%, rgba(0,0,0,.62) 100%);
+}
 .videoCard__play{
+  position:absolute;
+  left: 12px;
+  bottom: 12px;
   width:44px;
   height:44px;
   border-radius:999px;
   display:grid;
   place-items:center;
-  background: rgba(0,0,0,.40);
-  border: 1px solid rgba(255,255,255,.14);
-  font-weight:900;
+  background: rgba(0,0,0,.45);
+  border: 1px solid rgba(255,255,255,.18);
+  color: rgba(255,255,255,.95);
+  font-weight: 900;
+  z-index: 2;
 }
 .videoCard__label{
+  position:absolute;
+  right: 12px;
+  bottom: 14px;
   font-size:13px;
   padding:7px 10px;
   border-radius:999px;
-  background: rgba(0,0,0,.32);
-  border: 1px solid rgba(255,255,255,.12);
-  color: rgba(255,255,255,.90);
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.16);
+  color: rgba(255,255,255,.92);
+  z-index: 2;
 }
 .videoCard__text{
   margin:0;
@@ -557,7 +736,9 @@ h1{
   font-size:14px;
 }
 
-/* MODAL VIDEO */
+/* =========================
+   MODAL VÍDEO
+========================= */
 .videoModal{
   position: fixed;
   inset:0;
@@ -600,13 +781,17 @@ h1{
   background: #000;
 }
 
-/* Responsivo */
+/* =========================
+   RESPONSIVO
+========================= */
 @media (max-width: 940px){
   .hero__grid{ grid-template-columns: 1fr; }
   .ctaFinal__inner{ grid-template-columns: 1fr; }
   .cards{ grid-template-columns: 1fr; }
   .grid2{ grid-template-columns: 1fr; }
+  .spotlight{ grid-template-columns: 1fr; }
   .gallery{ grid-template-columns: repeat(2, 1fr); }
+  .steps{ grid-template-columns: 1fr; }
   .videoGrid{ grid-template-columns: 1fr; }
   .heroCarousel{ height: 340px; }
   .heroCarousel__img{ object-position: 50% 25%; }
@@ -614,8 +799,6 @@ h1{
 }
 
 @media (max-width: 520px){
-  .proof{ flex-wrap:wrap; }
-  .proof__item{ flex:1; min-width: 46%; }
   .gallery{ grid-template-columns: 1fr; }
   .footer__inner{ flex-direction: column; align-items:flex-start; }
   .heroCarousel{ height: 320px; }

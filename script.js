@@ -1,51 +1,118 @@
-// =====================
-// WhatsApp config
-// =====================
-const PHONE = "5517981167666";
-const DEFAULT_TEXT = "Olá! Gostaria de fazer um orçamento de aventais personalizados (atacado/varejo).";
+/* =========================================================
+   CONFIGURAÇÃO CENTRAL (WHATSAPP + CONVERSÃO)
+========================================================= */
+const CONFIG = {
+  whatsapp: {
+    phone: "5517981167666",
+    defaultText:
+      "Olá! Gostaria de fazer um orçamento de aventais personalizados (atacado/varejo).",
+    heroText:
+      "Olá! Quero fazer um orçamento de aventais personalizados. Pode me enviar modelos, personalização e valores?",
+  },
+  googleAds: {
+    sendTo: "AW-XXXXXXXXXX/CONVERSION_LABEL", // TROCAR
+  },
+};
 
-function waLink(text = DEFAULT_TEXT) {
-  const msg = encodeURIComponent(text);
-  return `https://wa.me/${PHONE}?text=${msg}`;
+/* =========================================================
+   HELPERS
+========================================================= */
+function waLink(text = CONFIG.whatsapp.defaultText) {
+  return `https://wa.me/${CONFIG.whatsapp.phone}?text=${encodeURIComponent(
+    text
+  )}`;
 }
 
-// aplica link em CTAs
-["ctaTop", "ctaHero", "ctaBenefits", "ctaGallery", "ctaFinal", "waFloat"].forEach((id) => {
+function trackMetaLead(source) {
+  try {
+    if (window.fbq) {
+      fbq("track", "Lead", { source });
+    }
+  } catch (_) {}
+}
+
+function trackGoogleConversion() {
+  try {
+    if (window.gtag) {
+      gtag("event", "conversion", {
+        send_to: CONFIG.googleAds.sendTo,
+      });
+    }
+  } catch (_) {}
+}
+
+/* =========================================================
+   APLICAR WHATSAPP EM TODOS OS CTAs
+========================================================= */
+const CTA_IDS = [
+  "ctaTop",
+  "ctaHero",
+  "ctaBenefits",
+  "ctaGallery",
+  "ctaFinal",
+  "ctaSpotlight",
+  "waFloat",
+];
+
+CTA_IDS.forEach((id) => {
   const el = document.getElementById(id);
-  if (el) el.setAttribute("href", waLink());
+  if (!el) return;
+
+  el.href = waLink();
+
+  el.addEventListener(
+    "click",
+    () => {
+      trackMetaLead(id);
+      trackGoogleConversion();
+    },
+    { passive: true }
+  );
 });
 
-// texto mais “forte” no botão principal do hero
+/* Texto mais forte no CTA principal do HERO */
 const heroCTA = document.getElementById("ctaHero");
 if (heroCTA) {
-  heroCTA.addEventListener("click", () => {
-    heroCTA.setAttribute(
-      "href",
-      waLink("Olá! Quero fazer orçamento. Pode me enviar modelos, personalização e valores (atacado/varejo)?")
-    );
-  });
+  heroCTA.addEventListener(
+    "click",
+    () => {
+      heroCTA.href = waLink(CONFIG.whatsapp.heroText);
+    },
+    { passive: true }
+  );
 }
 
-// =====================
-// WhatsApp flutuante: sobe perto do rodapé (sempre visível)
-// =====================
-const wa = document.getElementById("waFloat");
-const footerEl = document.querySelector(".footer");
+/* =========================================================
+   WHATSAPP FLUTUANTE (NÃO COBRE RODAPÉ)
+========================================================= */
+const waFloat = document.getElementById("waFloat");
+const footer = document.querySelector(".footer");
 
-if (wa && footerEl) {
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) wa.classList.add("lift");
-      else wa.classList.remove("lift");
-    });
-  }, { threshold: 0.05 });
-
-  obs.observe(footerEl);
+function updateWaLift() {
+  if (!waFloat || !footer) return;
+  const h = waFloat.getBoundingClientRect().height;
+  waFloat.style.setProperty("--lift", `${h + 20}px`);
 }
 
-// =====================
-// HERO CAROUSEL
-// =====================
+if (waFloat && footer) {
+  updateWaLift();
+  window.addEventListener("resize", updateWaLift);
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        waFloat.classList.toggle("lift", entry.isIntersecting);
+      });
+    },
+    { threshold: 0.01 }
+  );
+
+  observer.observe(footer);
+}
+
+/* =========================================================
+   HERO CAROUSEL
+========================================================= */
 const carousel = document.querySelector(".heroCarousel");
 const slides = Array.from(document.querySelectorAll(".heroCarousel__slide"));
 const dots = Array.from(document.querySelectorAll(".dotBtn"));
@@ -53,105 +120,112 @@ const prevBtn = document.querySelector(".heroCarousel__nav--prev");
 const nextBtn = document.querySelector(".heroCarousel__nav--next");
 
 let current = 0;
-let timer = null;
+let autoTimer = null;
 const INTERVAL = 4500;
 
-function setActive(index) {
+function showSlide(index) {
   if (!slides.length) return;
+
   current = (index + slides.length) % slides.length;
 
   slides.forEach((s) => s.classList.remove("is-active"));
   dots.forEach((d) => d.classList.remove("is-active"));
 
   slides[current].classList.add("is-active");
-  if (dots[current]) dots[current].classList.add("is-active");
+  dots[current]?.classList.add("is-active");
 }
 
 function startAuto() {
   stopAuto();
-  if (slides.length <= 1) return;
-  timer = setInterval(() => setActive(current + 1), INTERVAL);
+  if (slides.length > 1) {
+    autoTimer = setInterval(() => showSlide(current + 1), INTERVAL);
+  }
 }
 
 function stopAuto() {
-  if (timer) clearInterval(timer);
-  timer = null;
+  if (autoTimer) clearInterval(autoTimer);
+  autoTimer = null;
 }
 
-// Botões
-if (prevBtn) prevBtn.addEventListener("click", () => { setActive(current - 1); startAuto(); });
-if (nextBtn) nextBtn.addEventListener("click", () => { setActive(current + 1); startAuto(); });
+/* Navegação */
+prevBtn?.addEventListener("click", () => {
+  showSlide(current - 1);
+  startAuto();
+});
 
-// Dots
+nextBtn?.addEventListener("click", () => {
+  showSlide(current + 1);
+  startAuto();
+});
+
 dots.forEach((dot) => {
   dot.addEventListener("click", () => {
-    const i = Number(dot.dataset.dot);
-    setActive(i);
+    showSlide(Number(dot.dataset.dot));
     startAuto();
   });
 });
 
-// Pausa hover/focus
-if (carousel) {
-  carousel.addEventListener("mouseenter", stopAuto);
-  carousel.addEventListener("mouseleave", startAuto);
-  carousel.addEventListener("focusin", stopAuto);
-  carousel.addEventListener("focusout", startAuto);
-}
+/* Pausa quando interagir */
+carousel?.addEventListener("mouseenter", stopAuto);
+carousel?.addEventListener("mouseleave", startAuto);
+carousel?.addEventListener("focusin", stopAuto);
+carousel?.addEventListener("focusout", startAuto);
 
-// Swipe mobile
+/* Swipe mobile */
 let startX = 0;
 let startY = 0;
-let isSwiping = false;
+let swiping = false;
 
-if (carousel) {
-  carousel.addEventListener("touchstart", (e) => {
+carousel?.addEventListener(
+  "touchstart",
+  (e) => {
     const t = e.touches[0];
     startX = t.clientX;
     startY = t.clientY;
-    isSwiping = true;
+    swiping = true;
     stopAuto();
-  }, { passive: true });
+  },
+  { passive: true }
+);
 
-  carousel.addEventListener("touchmove", (e) => {
-    if (!isSwiping) return;
+carousel?.addEventListener(
+  "touchmove",
+  (e) => {
+    if (!swiping) return;
     const t = e.touches[0];
-    const dx = t.clientX - startX;
-    const dy = t.clientY - startY;
-
-    // se estiver rolando a página (vertical), não é swipe
-    if (Math.abs(dy) > Math.abs(dx)) {
-      isSwiping = false;
+    if (Math.abs(t.clientY - startY) > Math.abs(t.clientX - startX)) {
+      swiping = false;
       startAuto();
     }
-  }, { passive: true });
+  },
+  { passive: true }
+);
 
-  carousel.addEventListener("touchend", (e) => {
-    if (!isSwiping) return;
-    isSwiping = false;
-
-    const endX = e.changedTouches[0].clientX;
-    const dx = endX - startX;
-
+carousel?.addEventListener(
+  "touchend",
+  (e) => {
+    if (!swiping) return;
+    swiping = false;
+    const dx = e.changedTouches[0].clientX - startX;
     if (Math.abs(dx) > 40) {
-      if (dx < 0) setActive(current + 1);
-      else setActive(current - 1);
+      dx < 0 ? showSlide(current + 1) : showSlide(current - 1);
     }
     startAuto();
-  }, { passive: true });
-}
+  },
+  { passive: true }
+);
 
-// init carrossel
-setActive(0);
+/* Init */
+showSlide(0);
 startAuto();
 
-// =====================
-// VIDEO MODAL
-// =====================
+/* =========================================================
+   MODAL DE VÍDEO
+========================================================= */
 const modal = document.getElementById("videoModal");
 const player = document.getElementById("videoPlayer");
 
-function openVideo(src){
+function openVideo(src) {
   if (!modal || !player) return;
   player.src = src;
   modal.classList.add("is-open");
@@ -159,7 +233,7 @@ function openVideo(src){
   player.play().catch(() => {});
 }
 
-function closeVideo(){
+function closeVideo() {
   if (!modal || !player) return;
   player.pause();
   player.removeAttribute("src");
@@ -168,13 +242,15 @@ function closeVideo(){
   modal.setAttribute("aria-hidden", "true");
 }
 
+/* Abrir vídeo */
 document.querySelectorAll(".videoCard__thumb").forEach((btn) => {
   btn.addEventListener("click", () => {
-    const src = btn.getAttribute("data-video");
+    const src = btn.dataset.video;
     if (src) openVideo(src);
   });
 });
 
+/* Fechar modal */
 document.querySelectorAll("[data-close='1']").forEach((el) => {
   el.addEventListener("click", closeVideo);
 });
